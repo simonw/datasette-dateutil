@@ -30,6 +30,23 @@ If you want to assume that the day comes first, use these two functions instead:
 - `dateutil_parse_dayfirst(text)`
 - `dateutil_parse_fuzzy_dayfirst(text)`
 
+## Demo
+
+Here's an example query demonstrating some of the functions enabled by this plugin:
+
+```sql
+select
+  dateutil_parse("10 october 2020 3pm"),
+  dateutil_easter("2020"),
+  dateutil_parse_fuzzy("This is due 10 september"),
+  dateutil_parse("1/2/2020"),
+  dateutil_parse("2020-03-04"),
+  dateutil_parse_dayfirst("2020-03-04"),
+  dateutil_easter(2020)
+```
+
+[Try that query out here](https://latest-with-plugins.datasette.io/fixtures?sql=select%0D%0A++dateutil_parse%28%2210+october+2020+3pm%22%29%2C%0D%0A++dateutil_easter%28%222020%22%29%2C%0D%0A++dateutil_parse_fuzzy%28%22This+is+due+10+september%22%29%2C%0D%0A++dateutil_parse%28%221%2F2%2F2020%22%29%2C%0D%0A++dateutil_parse%28%222020-03-04%22%29%2C%0D%0A++dateutil_parse_dayfirst%28%222020-03-04%22%29%2C%0D%0A++dateutil_easter%282020%29)
+
 ## Development
 
 To set up this plugin locally, first checkout the code. Then create a new virtual environment:
