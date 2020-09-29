@@ -55,7 +55,7 @@ async def test_plugin_is_installed():
             '["2020-01-01", "2020-01-02", "2020-01-03", "2020-01-04"]',
         ),
         (
-            "select dateutil_dates_between('1 january 2020', '5 jan 2020', 1)",
+            "select dateutil_dates_between('1 january 2020', '5 jan 2020')",
             '["2020-01-01", "2020-01-02", "2020-01-03", "2020-01-04", "2020-01-05"]',
         ),
     ],
