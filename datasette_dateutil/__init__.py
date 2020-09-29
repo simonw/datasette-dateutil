@@ -50,8 +50,12 @@ class TooManyError(Exception):
     pass
 
 
-def dateutil_rrule(rrule, date=False):
-    results = list(itertools.islice(rrulestr(rrule), 0, RRULE_MAX + 1))
+def dateutil_rrule(rrule, dtstart=None, date=False):
+    dtstart = dtstart and parse(dtstart) or None
+    kwargs = {}
+    if dtstart:
+        kwargs["dtstart"] = dtstart
+    results = list(itertools.islice(rrulestr(rrule, **kwargs), 0, RRULE_MAX + 1))
     if len(results) > RRULE_MAX:
         raise TooManyError(
             "More than {} results returned by '{}'".format(RRULE_MAX, rrule)
@@ -61,8 +65,8 @@ def dateutil_rrule(rrule, date=False):
     return json.dumps([d.isoformat() for d in results])
 
 
-def dateutil_rrule_date(rrule):
-    return dateutil_rrule(rrule, date=True)
+def dateutil_rrule_date(rrule, dtstart=None):
+    return dateutil_rrule(rrule, dtstart, date=True)
 
 
 @hookimpl
@@ -75,4 +79,6 @@ def prepare_connection(conn):
     )
     conn.create_function("dateutil_easter", 1, dateutil_easter)
     conn.create_function("dateutil_rrule", 1, dateutil_rrule)
+    conn.create_function("dateutil_rrule", 2, dateutil_rrule)
     conn.create_function("dateutil_rrule_date", 1, dateutil_rrule_date)
+    conn.create_function("dateutil_rrule_date", 2, dateutil_rrule_date)
