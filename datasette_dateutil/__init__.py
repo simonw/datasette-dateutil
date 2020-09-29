@@ -1,6 +1,12 @@
 from datasette import hookimpl
 from dateutil.parser import parse, ParserError
+from dateutil.rrule import rrulestr
 from dateutil.easter import easter
+import itertools
+import json
+
+
+RRULE_MAX = 10_000
 
 
 def _dateutil_parse_shared(s, **kwargs):
@@ -40,6 +46,25 @@ def dateutil_easter(year):
         return None
 
 
+class TooManyError(Exception):
+    pass
+
+
+def dateutil_rrule(rrule, date=False):
+    results = list(itertools.islice(rrulestr(rrule), 0, RRULE_MAX + 1))
+    if len(results) > RRULE_MAX:
+        raise TooManyError(
+            "More than {} results returned by '{}'".format(RRULE_MAX, rrule)
+        )
+    if date:
+        results = [d.date() for d in results]
+    return json.dumps([d.isoformat() for d in results])
+
+
+def dateutil_rrule_date(rrule):
+    return dateutil_rrule(rrule, date=True)
+
+
 @hookimpl
 def prepare_connection(conn):
     conn.create_function("dateutil_parse", 1, dateutil_parse)
@@ -49,3 +74,5 @@ def prepare_connection(conn):
         "dateutil_parse_fuzzy_dayfirst", 1, dateutil_parse_fuzzy_dayfirst
     )
     conn.create_function("dateutil_easter", 1, dateutil_easter)
+    conn.create_function("dateutil_rrule", 1, dateutil_rrule)
+    conn.create_function("dateutil_rrule_date", 1, dateutil_rrule_date)
