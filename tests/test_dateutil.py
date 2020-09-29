@@ -50,6 +50,14 @@ async def test_plugin_is_installed():
             "select dateutil_rrule_date('FREQ=DAILY;INTERVAL=10;COUNT=5', '2020-01-01')",
             '["2020-01-01", "2020-01-11", "2020-01-21", "2020-01-31", "2020-02-10"]',
         ),
+        (
+            "select dateutil_dates_between('1 january 2020', '5 jan 2020', 0)",
+            '["2020-01-01", "2020-01-02", "2020-01-03", "2020-01-04"]',
+        ),
+        (
+            "select dateutil_dates_between('1 january 2020', '5 jan 2020', 1)",
+            '["2020-01-01", "2020-01-02", "2020-01-03", "2020-01-04", "2020-01-05"]',
+        ),
     ],
 )
 async def test_dateutil_sql_functions(sql, expected):
