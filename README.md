@@ -80,6 +80,50 @@ select
 ```
 [Try the rrule example query](https://latest-with-plugins.datasette.io/fixtures?sql=select%0D%0A++dateutil_rrule('FREQ%3DHOURLY%3BCOUNT%3D5')%2C%0D%0A++dateutil_rrule_date(%0D%0A++++'FREQ%3DDAILY%3BCOUNT%3D3'%2C%0D%0A++++'1st+jan+2020'%0D%0A++)%3B)
 
+### Joining data using json_each()
+
+SQLite's [json_each() function](https://www.sqlite.org/json1.html#jeach) can be used to turn a JSON array of dates into a table that can be joined against other data. Here's a query that returns a table showing every day in January 2019:
+
+```sql
+select
+  value as date
+from
+  json_each(
+    dateutil_dates_between('1 Jan 2019', '31 Jan 2019')
+  )
+```
+[Try that query](https://latest-with-plugins.datasette.io/fixtures?sql=select%0D%0A++value+as+date%0D%0Afrom%0D%0A++json_each%28%0D%0A++++dateutil_dates_between%28%271+Jan+2019%27%2C+%2731+Jan+2019%27%29%0D%0A++%29)
+
+You can run joins against this table by assigning it a name using SQLite's [support for Common Table Expressions (CTEs)](https://sqlite.org/lang_with.html).
+
+This example query uses `substr(created, 0, 11)` to retrieve the date portion of the `created` column in the [facetable demo table](https://latest-with-plugins.datasette.io/fixtures/facetable), then joins that against the table of days in January to calculate the count of rows created on each day. The `LEFT JOIN` against `days_in_january` ensures that days which had no created records are still returned in the results, with a count of 0.
+
+```sql
+with created_dates as (
+  select
+    substr(created, 0, 11) as date
+  from
+    facetable
+),
+days_in_january as (
+  select
+    value as date
+  from
+    json_each(
+      dateutil_dates_between('1 Jan 2019', '31 Jan 2019')
+    )
+)
+select
+  days_in_january.date,
+  count(created_dates.date) as total
+from
+  days_in_january
+  left join created_dates on days_in_january.date = created_dates.date
+group by
+  days_in_january.date;
+```
+[Try that query](https://latest-with-plugins.datasette.io/fixtures?sql=with+created_dates+as+%28%0D%0A++select%0D%0A++++substr%28created%2C+0%2C+11%29+as+date%0D%0A++from%0D%0A++++facetable%0D%0A%29%2C%0D%0Adays_in_january+as+%28%0D%0A++select%0D%0A++++value+as+date%0D%0A++from%0D%0A++++json_each%28%0D%0A++++++dateutil_dates_between%28%271+Jan+2019%27%2C+%2731+Jan+2019%27%29%0D%0A++++%29%0D%0A%29%0D%0Aselect%0D%0A++days_in_january.date%2C%0D%0A++count%28created_dates.date%29+as+total%0D%0Afrom%0D%0A++days_in_january%0D%0A++left+join+created_dates+on+days_in_january.date+%3D+created_dates.date%0D%0Agroup+by%0D%0A++days_in_january.date%3B#g.mark=bar&g.x_column=date&g.x_type=ordinal&g.y_column=total&g.y_type=quantitative) with a bar chart rendered using the [datasette-vega](https://github.com/simonw/datasette-vega) plugin.
+
 ## Development
 
 To set up this plugin locally, first checkout the code. Then create a new virtual environment:
