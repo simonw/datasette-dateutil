@@ -64,7 +64,7 @@ async def test_dateutil_sql_functions(sql, expected):
     app = Datasette([], memory=True).app()
     async with httpx.AsyncClient(app=app) as client:
         response = await client.get(
-            "http://localhost/:memory:.json",
+            "http://localhost/_memory.json",
             params={
                 "sql": sql,
                 "_shape": "array",
@@ -80,7 +80,7 @@ async def test_dateutil_unbounded_rrule_error():
     app = Datasette([], memory=True).app()
     async with httpx.AsyncClient(app=app) as client:
         response = await client.get(
-            "http://localhost/:memory:.json",
+            "http://localhost/_memory.json",
             params={
                 "sql": "select dateutil_rrule('FREQ=DAILY;INTERVAL=10')",
                 "_shape": "array",
