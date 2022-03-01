@@ -11,6 +11,9 @@ RRULE_MAX = 10_000
 
 
 def _dateutil_parse_shared(s, **kwargs):
+    default = kwargs.get("default")
+    if default is not None:
+        kwargs["default"] = parse(kwargs["default"])
     if not kwargs.get("dayfirst"):
         kwargs["dayfirst"] = False
     if not s:
@@ -21,20 +24,20 @@ def _dateutil_parse_shared(s, **kwargs):
         return None
 
 
-def dateutil_parse(s):
-    return _dateutil_parse_shared(s)
+def dateutil_parse(s, default=None):
+    return _dateutil_parse_shared(s, default=default)
 
 
-def dateutil_parse_fuzzy(s):
-    return _dateutil_parse_shared(s, fuzzy=True)
+def dateutil_parse_fuzzy(s, default=None):
+    return _dateutil_parse_shared(s, fuzzy=True, default=default)
 
 
-def dateutil_parse_dayfirst(s):
-    return _dateutil_parse_shared(s, dayfirst=True)
+def dateutil_parse_dayfirst(s, default=None):
+    return _dateutil_parse_shared(s, dayfirst=True, default=default)
 
 
-def dateutil_parse_fuzzy_dayfirst(s):
-    return _dateutil_parse_shared(s, fuzzy=True, dayfirst=True)
+def dateutil_parse_fuzzy_dayfirst(s, default=None):
+    return _dateutil_parse_shared(s, fuzzy=True, dayfirst=True, default=default)
 
 
 def dateutil_easter(year):
@@ -101,6 +104,13 @@ def prepare_connection(conn):
     conn.create_function("dateutil_parse_dayfirst", 1, dateutil_parse_dayfirst)
     conn.create_function(
         "dateutil_parse_fuzzy_dayfirst", 1, dateutil_parse_fuzzy_dayfirst
+    )
+    # The two argument version of these (default date is second argument)
+    conn.create_function("dateutil_parse", 2, dateutil_parse)
+    conn.create_function("dateutil_parse_fuzzy", 2, dateutil_parse_fuzzy)
+    conn.create_function("dateutil_parse_dayfirst", 2, dateutil_parse_dayfirst)
+    conn.create_function(
+        "dateutil_parse_fuzzy_dayfirst", 2, dateutil_parse_fuzzy_dayfirst
     )
     conn.create_function("dateutil_easter", 1, dateutil_easter)
     conn.create_function("dateutil_rrule", 1, dateutil_rrule)

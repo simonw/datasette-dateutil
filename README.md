@@ -44,6 +44,16 @@ select
 
 [Try that query](https://latest-with-plugins.datasette.io/fixtures?sql=select%0D%0A++dateutil_parse%28%2210+october+2020+3pm%22%29%2C%0D%0A++dateutil_parse_fuzzy%28%22This+is+due+10+september%22%29%2C%0D%0A++dateutil_parse%28%221%2F2%2F2020%22%29%2C%0D%0A++dateutil_parse%28%222020-03-04%22%29%2C%0D%0A++dateutil_parse_dayfirst%28%222020-03-04%22%29%3B)
 
+### Optional default dates
+
+The `dateutil_parse()`, `dateutil_parse_fuzzy()`, `dateutil_parse_dayfirst()` and `dateutil_parse_fuzzy_dayfirst()` functions all accept an optional second argument specifying a "default" datetime to consider if some of the details are missing. For example, the following:
+```sql
+select dateutil_parse('1st october', '1985-01-01')
+```
+Will return `1985-10-01T00:00:00` - the missing year is replaced with the year from the default date.
+
+[Example query demonstrating the default date argument](https://latest-with-plugins.datasette.io/fixtures?sql=with+times+as+%28%0D%0A++select%0D%0A++++datetime%28%27now%27%29+as+t%0D%0A++union%0D%0A++select%0D%0A++++datetime%28%27now%27%2C+%27-1+year%27%29%0D%0A++union%0D%0A++select%0D%0A++++datetime%28%27now%27%2C+%27-3+years%27%29%0D%0A%29%0D%0Aselect+t%2C+dateutil_parse_fuzzy%28%22This+is+due+10+september%22%2C+t%29+from+times)
+
 ### Calculating Easter
 
 - `dateutil_easter(year)` - returns the date for Easter in that year, for example `dateutil_easter("2020")` returns `2020-04-12`.
