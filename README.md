@@ -71,7 +71,7 @@ These functions can return up to 10,000 results. They will return an error if mo
 
 [Try these queries](https://latest-with-plugins.datasette.io/fixtures?sql=select%0D%0A++dateutil_dates_between%28%271+january+2020%27%2C+%275+jan+2020%27%29%2C%0D%0A++dateutil_dates_between%28%271+january+2020%27%2C+%275+jan+2020%27%2C+0%29)
 
-The `dateutil_rrule()` and `dateutil_rrule_date()` functions accept the iCalendar standard ``rrule` format - see [the dateutil documentation](https://dateutil.readthedocs.io/en/stable/rrule.html#rrulestr-examples) for more examples.
+The `dateutil_rrule()` and `dateutil_rrule_date()` functions accept the iCalendar standard `rrule` format - see [the dateutil documentation](https://dateutil.readthedocs.io/en/stable/rrule.html#rrulestr-examples) for more examples.
 
 This format lets you specify recurrence rules such as "the next four last mondays of the month".
 
