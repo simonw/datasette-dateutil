@@ -1,0 +1,31 @@
+[project]
+name = "datasette-dateutil"
+version = "0.3"
+description = "dateutil functions for Datasette"
+readme = "README.md"
+license = "Apache-2.0"
+classifiers=[
+    "Framework :: Datasette"
+]
+authors = [{ name = "Simon Willison" }]
+dependencies = [
+    "datasette>=1.0a14",
+    "python-dateutil",
+]
+optional-dependencies = { test = ["pytest", "pytest-asyncio", "httpx"] }
+
+[project.entry-points."datasette"]
+dateutil = "datasette_dateutil"
+
+[project.urls]
+Homepage = "https://github.com/simonw/datasette-dateutil"
+Issues = "https://github.com/simonw/datasette-dateutil/issues"
+CI = "https://github.com/simonw/datasette-dateutil/actions"
+Changelog = "https://github.com/simonw/datasette-dateutil/releases"
+
+[tool.setuptools.packages.find]
+include = ["datasette_dateutil"]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
